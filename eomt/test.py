@@ -11,7 +11,7 @@ import warnings
 import importlib
 
 
-# FIRST DO TO THE EOMT FOLDER
+# FIRST GO TO THE EOMT FOLDER
 
 print("Starting step 1 : preparation code...")
 seed_everything(0, verbose=False)
