@@ -10,11 +10,14 @@ from huggingface_hub.utils import RepositoryNotFoundError
 import warnings
 import importlib
 
+
+# FIRST DO TO THE EOMT FOLDER
+
 print("Starting step 1 : preparation code...")
 seed_everything(0, verbose=False)
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")  # TODO: change to the GPU you want to use
-img_idx = 5  # TODO: change to the index of the image you want to visualize
+img_idx = 6  # TODO: change to the index of the image you want to visualize
 config_path = "configs/dinov2/cityscapes/semantic/eomt_base_640.yaml"  # TODO: change to the config file
 data_path = r"C:\Users\vasse\Documents\POLITO\Fundamentals_AI\Group project\Datasets\Cityscapes"  # TODO: change to the dataset directory
 
