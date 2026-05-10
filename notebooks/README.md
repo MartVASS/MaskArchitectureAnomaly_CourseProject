@@ -1,6 +1,8 @@
 # Notebooks 
 
-1. To visualize semantic segmentation (pixel-wise) prediction from pre-trained model : OPEN visualization_sementic_cityscapes.ipynb
+## Semantic segmentation predictions
+
+To visualize semantic segmentation (pixel-wise) prediction from pre-trained model : OPEN visualization_sementic_cityscapes.ipynb
    
 REQUIREMENTS : have the cityscapes validation datasets in your google drive : "mydrive/Cityscapes" (TO BE MODIFIED IN YOUR SPECIFIC CASE in preparation code cell.)
 
