@@ -94,6 +94,12 @@ class MaskClassificationSemantic(LightningModule):
         mask_logits_per_layer, class_logits_per_layer = self(crops)
 
         targets = self.to_per_pixel_targets_semantic(targets, self.ignore_idx)
+        
+        POLE_ID = 5  # Cityscapes
+        targets = [
+        torch.where(t == POLE_ID, self.ignore_idx, t)
+        for t in targets
+        ]
 
         for i, (mask_logits, class_logits) in enumerate(
             list(zip(mask_logits_per_layer, class_logits_per_layer))
