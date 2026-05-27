@@ -1,0 +1,137 @@
+COCO 			
+			
+train_id	coco_id	class_name	type
+0	1	person	thing
+1	2	bicycle	thing
+2	3	car	thing
+3	4	motorcycle	thing
+4	5	airplane	thing
+5	6	bus	thing
+6	7	train	thing
+7	8	truck	thing
+8	9	boat	thing
+9	10	traffic light	thing
+10	11	fire hydrant	thing
+11	13	stop sign	thing
+12	14	parking meter	thing
+13	15	bench	thing
+14	16	bird	thing
+15	17	cat	thing
+16	18	dog	thing
+17	19	horse	thing
+18	20	sheep	thing
+19	21	cow	thing
+20	22	elephant	thing
+21	23	bear	thing
+22	24	zebra	thing
+23	25	giraffe	thing
+24	27	backpack	thing
+25	28	umbrella	thing
+26	31	handbag	thing
+27	32	tie	thing
+28	33	suitcase	thing
+29	34	frisbee	thing
+30	35	skis	thing
+31	36	snowboard	thing
+32	37	sports ball	thing
+33	38	kite	thing
+34	39	baseball bat	thing
+35	40	baseball glove	thing
+36	41	skateboard	thing
+37	42	surfboard	thing
+38	43	tennis racket	thing
+39	44	bottle	thing
+40	46	wine glass	thing
+41	47	cup	thing
+42	48	fork	thing
+43	49	knife	thing
+44	50	spoon	thing
+45	51	bowl	thing
+46	52	banana	thing
+47	53	apple	thing
+48	54	sandwich	thing
+49	55	orange	thing
+50	56	broccoli	thing
+51	57	carrot	thing
+52	58	hot dog	thing
+53	59	pizza	thing
+54	60	donut	thing
+55	61	cake	thing
+56	62	chair	thing
+57	63	couch	thing
+58	64	potted plant	thing
+59	65	bed	thing
+60	67	dining table	thing
+61	70	toilet	thing
+62	72	tv	thing
+63	73	laptop	thing
+64	74	mouse	thing
+65	75	remote	thing
+66	76	keyboard	thing
+67	77	cell phone	thing
+68	78	microwave	thing
+69	79	oven	thing
+70	80	toaster	thing
+71	81	sink	thing
+72	82	refrigerator	thing
+73	84	book	thing
+74	85	clock	thing
+75	86	vase	thing
+76	87	scissors	thing
+77	88	teddy bear	thing
+78	89	hair drier	thing
+79	90	toothbrush	thing
+80	92	banner	stuff
+81	93	blanket	stuff
+82	95	bridge	stuff
+83	100	cardboard	stuff
+84	107	counter	stuff
+85	109	curtain	stuff
+86	112	door-stuff	stuff
+87	118	floor-wood	stuff
+88	119	flower	stuff
+89	122	fruit	stuff
+90	125	gravel	stuff
+91	128	house	stuff
+92	130	light	stuff
+93	133	mirror-stuff	stuff
+94	138	net	stuff
+95	141	pillow	stuff
+96	144	platform	stuff
+97	145	playingfield	stuff
+98	147	railroad	stuff
+99	148	river	stuff
+100	149	road	stuff
+101	151	roof	stuff
+102	154	sand	stuff
+103	155	sea	stuff
+104	156	shelf	stuff
+105	159	snow	stuff
+106	161	stairs	stuff
+107	166	tent	stuff
+108	168	towel	stuff
+109	171	wall-brick	stuff
+110	175	wall-stone	stuff
+111	176	wall-tile	stuff
+112	177	wall-wood	stuff
+113	178	water-other	stuff
+114	180	window-blind	stuff
+115	181	window-other	stuff
+116	184	tree-merged	stuff
+117	185	fence-merged	stuff
+118	186	ceiling-merged	stuff
+119	187	sky-other-merged	stuff
+120	188	cabinet-merged	stuff
+121	189	table-merged	stuff
+122	190	floor-other-merged	stuff
+123	191	pavement-merged	stuff
+124	192	mountain-merged	stuff
+125	193	grass-merged	stuff
+126	194	dirt-merged	stuff
+127	195	paper-merged	stuff
+128	196	food-other-merged	stuff
+129	197	building-other-merged	stuff
+130	198	rock-merged	stuff
+131	199	wall-other-merged	stuff
+132	200	rug-merged	stuff
+255	255	IGNORE	
