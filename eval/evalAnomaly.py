@@ -13,6 +13,77 @@ from ood_metrics import fpr_at_95_tpr, calc_metrics, plot_roc, plot_pr,plot_barc
 from sklearn.metrics import roc_auc_score, roc_curve, auc, precision_recall_curve, average_precision_score
 from torchvision.transforms import Compose, Resize, ToTensor, Normalize
 
+import torch.nn.functional as F
+
+
+
+def get_softmax(network, image, as_numpy=True):
+    with torch.no_grad():
+        logits = network(image)
+
+    probs = F.softmax(logits, dim=1)
+
+    if as_numpy:
+        return probs.cpu().numpy()[0].astype("float32")
+
+    return probs
+    
+    
+    
+    
+
+class Max_softmax:
+    def __init__(self, model):
+        self.model = model
+
+    def anomaly_score(self, image):
+        probs = get_softmax(self.model, image, as_numpy=False)
+        return 1.0 - probs.max(dim=1)[0].squeeze(0).cpu().numpy()
+
+
+
+
+def get_entropy(network, image, as_numpy=True):
+    probs = get_softmax(network, image, as_numpy=False)
+
+    C = probs.shape[1]
+
+    entropy = torch.sum(-probs * torch.log(probs + 1e-10), dim=1)
+    entropy = entropy / torch.log(torch.tensor(C, device=probs.device, dtype=torch.float32))
+
+    if as_numpy:
+        return entropy.cpu().numpy()[0].astype("float32")
+
+    return entropy
+
+
+
+
+class Entropy_max:
+    def __init__(self, model):
+        self.model = model
+
+    def anomaly_score(self, image):
+        return get_entropy(self.model, image)
+        
+        
+        
+        
+        
+class Max_logit:
+    def __init__(self, model):
+        self.model = model
+
+    def anomaly_score(self, image):
+        with torch.no_grad():
+            logits = self.model(image)
+
+        score = -logits.max(dim=1)[0].squeeze(0)
+        return score.detach().cpu().numpy()
+
+
+
+
 seed = 42
 
 # general reproducibility
@@ -41,6 +112,13 @@ target_transform = Compose(
 )
 
 
+
+
+#added 
+
+
+
+
 def main():
     parser = ArgumentParser()
     parser.add_argument(
@@ -58,7 +136,53 @@ def main():
     parser.add_argument('--num-workers', type=int, default=4)
     parser.add_argument('--batch-size', type=int, default=1)
     parser.add_argument('--cpu', action='store_true')
+    
+    ###added
+    parser.add_argument('--datasets', nargs='+', default=None)
+    parser.add_argument('--methods', nargs='+', default=['msp'])
+    
+    
     args = parser.parse_args()
+    
+    
+    
+    
+    #added
+    
+    DATASETS = {
+    "RoadAnomaly": "data/Validation_Dataset/RoadAnomaly/images/*",
+    "RoadAnomaly21": "data/Validation_Dataset/RoadAnomaly21/images/*",
+    "fs_static": "data/Validation_Dataset/fs_static/images/*",
+    "LostFound": "data/Validation_Dataset/FS_LostFound_full/images/*",
+    "RoadObsticle21": "data/Validation_Dataset/RoadObsticle21/images/*",
+        }
+
+
+
+    METHODS = {
+    "msp": lambda model: Max_softmax(model),
+    "entropy": lambda model: Entropy_max(model),
+    "maxlogit": lambda model: Max_logit(model),
+        }
+
+
+    
+    
+    #added 
+    
+    dataset_list = []
+
+    if args.datasets is not None:
+        for d in args.datasets:
+            dataset_list.append((d, DATASETS[d]))
+    else:
+        dataset_list = [("custom", args.input[0])]
+    
+    
+    
+    
+    
+    
     anomaly_score_list = []
     ood_gts_list = []
 
@@ -94,70 +218,115 @@ def main():
     print ("Model and weights LOADED successfully")
     model.eval()
     
-    for path in glob.glob(os.path.expanduser(str(args.input[0]))):
-        print(path)
-        images = input_transform((Image.open(path).convert('RGB'))).unsqueeze(0).float().cuda()
-        images = images.permute(0,3,1,2)
-        with torch.no_grad():
-            result = model(images)
-        anomaly_result = 1.0 - np.max(result.squeeze(0).data.cpu().numpy(), axis=0)            
-        pathGT = path.replace("images", "labels_masks")                
-        if "RoadObsticle21" in pathGT:
-           pathGT = pathGT.replace("webp", "png")
-        if "fs_static" in pathGT:
-           pathGT = pathGT.replace("jpg", "png")                
-        if "RoadAnomaly" in pathGT:
-           pathGT = pathGT.replace("jpg", "png")  
-
-        mask = Image.open(pathGT)
-        mask = target_transform(mask)
-        ood_gts = np.array(mask)
-
-        if "RoadAnomaly" in pathGT:
-            ood_gts = np.where((ood_gts==2), 1, ood_gts)
-        if "LostAndFound" in pathGT:
-            ood_gts = np.where((ood_gts==0), 255, ood_gts)
-            ood_gts = np.where((ood_gts==1), 0, ood_gts)
-            ood_gts = np.where((ood_gts>1)&(ood_gts<201), 1, ood_gts)
-
-        if "Streethazard" in pathGT:
-            ood_gts = np.where((ood_gts==14), 255, ood_gts)
-            ood_gts = np.where((ood_gts<20), 0, ood_gts)
-            ood_gts = np.where((ood_gts==255), 1, ood_gts)
-
-        if 1 not in np.unique(ood_gts):
-            continue              
-        else:
-             ood_gts_list.append(ood_gts)
-             anomaly_score_list.append(anomaly_result)
-        del result, anomaly_result, ood_gts, mask
-        torch.cuda.empty_cache()
-
-    file.write( "\n")
-
-    ood_gts = np.array(ood_gts_list)
-    anomaly_scores = np.array(anomaly_score_list)
-
-    ood_mask = (ood_gts == 1)
-    ind_mask = (ood_gts == 0)
-
-    ood_out = anomaly_scores[ood_mask]
-    ind_out = anomaly_scores[ind_mask]
-
-    ood_label = np.ones(len(ood_out))
-    ind_label = np.zeros(len(ind_out))
+    ##
+    #method = Max_logit(model)
     
-    val_out = np.concatenate((ind_out, ood_out))
-    val_label = np.concatenate((ind_label, ood_label))
+    
+    for dataset_name, dataset_path in dataset_list:
 
-    prc_auc = average_precision_score(val_label, val_out)
-    fpr = fpr_at_95_tpr(val_out, val_label)
+        print(f"\n========== DATASET: {dataset_name} ==========")
 
-    print(f'AUPRC score: {prc_auc*100.0}')
-    print(f'FPR@TPR95: {fpr*100.0}')
+        for method_name in args.methods:
 
-    file.write(('    AUPRC score:' + str(prc_auc*100.0) + '   FPR@TPR95:' + str(fpr*100.0) ))
-    file.close()
+            print(f"\n---- METHOD: {method_name} ----")
+
+            method = METHODS[method_name](model)
+
+            anomaly_score_list = []
+            ood_gts_list = []
+
+            for path in glob.glob(dataset_path):
+    
+                print(path)
+                images = input_transform((Image.open(path).convert('RGB'))).unsqueeze(0).float().cuda()
+                #images = images.permute(0,3,1,2)
+                #####
+                
+           
+                  
+                        
+                with torch.no_grad():
+                    
+        
+                    result = model(images)
+                    
+                   
+                #MSP (Maximum Softmax Probability)
+        
+                msp_scores = torch.softmax(result, dim=1)
+                msp_anomaly = 1.0 - msp_scores.max(dim=1)[0].squeeze(0).cpu().numpy()
+        
+        
+                # MaxLogit
+                
+                maxlogit_anomaly = -result.max(dim=1)[0].squeeze(0).cpu().numpy()
+        
+                # SCEGLI QUALE USARE:
+                #anomaly_result = msp_anomaly
+                #anomaly_result = maxlogit_anomaly
+                anomaly_result = method.anomaly_score(images)
+                    
+                               
+                pathGT = path.replace("images", "labels_masks")                
+                if "RoadObsticle21" in pathGT:
+                   pathGT = pathGT.replace("webp", "png")
+                if "fs_static" in pathGT:
+                   pathGT = pathGT.replace("jpg", "png")                
+                if "RoadAnomaly" in pathGT:
+                   pathGT = pathGT.replace("jpg", "png")  
+        
+                mask = Image.open(pathGT)
+                mask = target_transform(mask)
+                ood_gts = np.array(mask)
+        
+                if "RoadAnomaly" in pathGT:
+                    ood_gts = np.where((ood_gts==2), 1, ood_gts)
+                if "LostAndFound" in pathGT:
+                    ood_gts = np.where((ood_gts==0), 255, ood_gts)
+                    ood_gts = np.where((ood_gts==1), 0, ood_gts)
+                    ood_gts = np.where((ood_gts>1)&(ood_gts<201), 1, ood_gts)
+        
+                if "Streethazard" in pathGT:
+                    ood_gts = np.where((ood_gts==14), 255, ood_gts)
+                    ood_gts = np.where((ood_gts<20), 0, ood_gts)
+                    ood_gts = np.where((ood_gts==255), 1, ood_gts)
+        
+                if 1 not in np.unique(ood_gts):
+                  continue              
+                else:
+                     ood_gts_list.append(ood_gts)
+                     anomaly_score_list.append(anomaly_result)
+                del result, anomaly_result, ood_gts, mask
+                torch.cuda.empty_cache()
+        
+        
+        
+            
+    
+            ood_gts = np.array(ood_gts_list)
+            anomaly_scores = np.array(anomaly_score_list)
+        
+            ood_mask = (ood_gts == 1)
+            ind_mask = (ood_gts == 0)
+        
+            ood_out = anomaly_scores[ood_mask]
+            ind_out = anomaly_scores[ind_mask]
+        
+            ood_label = np.ones(len(ood_out))
+            ind_label = np.zeros(len(ind_out))
+            
+            val_out = np.concatenate((ind_out, ood_out))
+            val_label = np.concatenate((ind_label, ood_label))
+        
+            prc_auc = average_precision_score(val_label, val_out)
+            fpr = fpr_at_95_tpr(val_out, val_label)
+        
+            print(f'AUPRC score: {prc_auc*100.0}')
+            print(f'FPR@TPR95: {fpr*100.0}')
+        
+            file.write(('    AUPRC score:' + str(prc_auc*100.0) + '   FPR@TPR95:' + str(fpr*100.0) ))
+    file.close()            
 
 if __name__ == '__main__':
     main()
+   
