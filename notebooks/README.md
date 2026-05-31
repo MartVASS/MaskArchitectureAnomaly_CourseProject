@@ -23,6 +23,17 @@ REQUIREMENTS : have the cityscapes validation datasets in your google drive : "m
 REQUIREMENTS : have the the cityscapes validation datasets in your google drive : "mydrive/Cityscapes" (TO BE MODIFIED IN YOUR SPECIFIC CASE in preparation code cell.)
 have the .bin file of the model on your drive : "/content/drive/MyDrive/COCO/eomt_coco.bin"
 
+To evaluate this model, OPEN Evaluation_comparison.ipynb. 
 Run the first two cells. This would take 5 minutes, then a request to resart your session pop. Restart your session  and rerun all the cells.
    Then connect to your wandb account with the API key provided. Then run the next cell who adapt the code to calculate the mIoU using the mapping (COCO -> Cityscapes) between index classes. Then run the last cell and read at the end the mIoU calculated.
+
+## Fine tuning of COCO pretrained model 
+
+REQUIREMENTS : REQUIREMENTS : have the the cityscapes validation datasets in your google drive : "mydrive/Cityscapes" (TO BE MODIFIED IN YOUR SPECIFIC CASE in preparation code cell.)
+have the .bin file of the model on your drive : "/content/drive/MyDrive/COCO/eomt_coco.bin"
+
+To run the training, OPEN Fine_tuning_COCO_fixed_1.ipynb. 
+Run the first two cells. This would take 5 minutes, then a request to resart your session pop. Restart your session  and rerun all the cells.
+Then connect to your wandb account with the API key provided. Then run the next cell who adapt the code to calculate the mIoU using the mapping (COCO -> Cityscapes) between index classes. Then run the last cell dans be patient during fine tuning, after each epoch, the mIoU is calculated.
+
    
