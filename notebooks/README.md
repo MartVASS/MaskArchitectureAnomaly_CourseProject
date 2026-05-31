@@ -17,6 +17,15 @@ REQUIREMENTS : have the cityscapes validation datasets in your google drive : "m
 
    Run the first two cells. This would take 5 minutes, then a request to resart your session pop. Restart your session  and rerun all the cells.
    At the end, you will find the prediction. 
+## Evaluate the mIoU of the Cityscapes pre-trained model on Cityscapes dataset.
+
+REQUIREMENTS : have the cityscapes validation datasets in your google drive : "mydrive/Cityscapes" (TO BE MODIFIED IN YOUR SPECIFIC CASE in preparation code cell.)
+have the .bin file of the model on your drive : "/content/drive/MyDrive/Cityscapes/eomt_cityscapes.bin"
+
+To evaluate this model, OPEN Eval_eomt_semantic.ipynb. 
+Run the first two cells. This would take 5 minutes, then a request to resart your session pop. Restart your session  and rerun all the cells.
+   Then connect to your wandb account with the API key provided. Then run the last cell and read at the end the mIoU calculated.
+
 
 ## Evaluate semantic mIoU of COCO pre-trained model on Cityscapes dataset 
 
