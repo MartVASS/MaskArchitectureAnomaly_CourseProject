@@ -26,6 +26,7 @@ To evaluate this model, OPEN Eval_eomt_semantic.ipynb.
 Run the first two cells. This would take 5 minutes, then a request to resart your session pop. Restart your session  and rerun all the cells.
    Then connect to your wandb account with the API key provided. Then run the last cell and read at the end the mIoU calculated.
 
+NOTE : a problem currently occurs with the display of the output of this notebooks, if you want to visualize you can find here :  a link to see the output of the evaluation.
 
 ## Evaluate semantic mIoU of COCO pre-trained model on Cityscapes dataset 
 
