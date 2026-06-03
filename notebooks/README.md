@@ -26,7 +26,6 @@ To evaluate this model, OPEN Eval_eomt_semantic.ipynb.
 Run the first two cells. This would take 5 minutes, then a request to resart your session pop. Restart your session  and rerun all the cells.
    Then connect to your wandb account with the API key provided. Then run the last cell and read at the end the mIoU calculated.
 
-NOTE : a problem currently occurs with the display of the output of this notebooks, if you want to visualize you can find here :  a link to see the output of the evaluation.
 
 ## Evaluate semantic mIoU of COCO pre-trained model on Cityscapes dataset 
 
@@ -48,8 +47,13 @@ Then connect to your wandb account with the API key provided. Then run the next 
 
 NOTE : if a problem occurs with the display of the output of this notebooks, you can visualize it here : https://nbviewer.org/github/MartVASS/MaskArchitectureAnomaly_CourseProject/blob/main/notebooks/Fine_tuning_COCO_fixed_1.ipynb a link to see the output of the fine tune process.
 
-## Evaluate the mIoU of the ERFNet model
+## Evaluate the mIoU of the ERFNet model on Cityscapes
 
-REQUIREMENTS : have the Anomaly ...
+REQUIREMENTS : REQUIREMENTS : have the cityscapes validation datasets in your google drive : "mydrive/Cityscapes" (TO BE MODIFIED IN YOUR SPECIFIC CASE)
+
+To evaluate this model, OPEN Eval_ERFNet_mIoU.ipynb. 
+Run the first two cells. Run all the cells. This should take few minutes on GPU T4. At the end, you can read the mIoU.
+
+
 
    
