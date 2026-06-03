@@ -1,0 +1,272 @@
+import glob
+import os
+import random
+import sys
+from argparse import ArgumentParser
+from pathlib import Path
+
+import numpy as np
+import torch
+import torch.nn.functional as F
+import yaml
+from PIL import Image
+from sklearn.metrics import average_precision_score, roc_curve
+from torchvision.transforms import Compose, Resize, ToTensor
+
+
+seed = 42
+random.seed(seed)
+np.random.seed(seed)
+torch.manual_seed(seed)
+torch.backends.cudnn.deterministic = True
+torch.backends.cudnn.benchmark = True
+
+EVAL_DIR = Path(__file__).resolve().parent
+PROJECT_ROOT = EVAL_DIR.parent
+EOMT_ROOT = PROJECT_ROOT / "eomt"
+sys.path.insert(0, str(EOMT_ROOT))
+
+
+DATASETS = {
+    "RoadAnomaly": "data/Validation_Dataset/RoadAnomaly/images/*",
+    "RoadAnomaly21": "data/Validation_Dataset/RoadAnomaly21/images/*",
+    "fs_static": "data/Validation_Dataset/fs_static/images/*",
+    "LostFound": "data/Validation_Dataset/FS_LostFound_full/images/*",
+    "RoadObsticle21": "data/Validation_Dataset/RoadObsticle21/images/*",
+}
+
+
+def fpr_at_95_tpr(scores, labels):
+    fpr, tpr, _ = roc_curve(labels, scores)
+    if np.all(tpr < 0.95):
+        return 1.0
+    return float(fpr[np.argmax(tpr >= 0.95)])
+
+
+def load_config(config_path):
+    with open(config_path, "r", encoding="utf-8") as f:
+        return yaml.safe_load(f)
+
+
+def download_checkpoint(repo_id, filename):
+    from huggingface_hub import hf_hub_download
+
+    return hf_hub_download(repo_id=repo_id, filename=filename)
+
+
+def build_eomt_model(config, checkpoint_path, img_size, num_classes, num_q, device):
+    import importlib
+
+    encoder_cfg = config["model"]["init_args"]["network"]["init_args"]["encoder"]
+    encoder_module_name, encoder_class_name = encoder_cfg["class_path"].rsplit(".", 1)
+    encoder_cls = getattr(importlib.import_module(encoder_module_name), encoder_class_name)
+    encoder = encoder_cls(img_size=img_size, **encoder_cfg.get("init_args", {}))
+
+    network_cfg = config["model"]["init_args"]["network"]
+    network_module_name, network_class_name = network_cfg["class_path"].rsplit(".", 1)
+    network_cls = getattr(importlib.import_module(network_module_name), network_class_name)
+    network_kwargs = {
+        k: v for k, v in network_cfg["init_args"].items() if k != "encoder"
+    }
+    network_kwargs["num_q"] = num_q
+    network = network_cls(
+        masked_attn_enabled=False,
+        num_classes=num_classes,
+        encoder=encoder,
+        **network_kwargs,
+    )
+
+    lit_module_name, lit_class_name = config["model"]["class_path"].rsplit(".", 1)
+    lit_cls = getattr(importlib.import_module(lit_module_name), lit_class_name)
+    model_kwargs = {
+        k: v for k, v in config["model"]["init_args"].items() if k != "network"
+    }
+    model = lit_cls(
+        img_size=img_size,
+        num_classes=num_classes,
+        network=network,
+        **model_kwargs,
+    ).eval().to(device)
+
+    checkpoint = torch.load(checkpoint_path, map_location=device, weights_only=False)
+    state_dict = checkpoint["state_dict"] if "state_dict" in checkpoint else checkpoint
+    state_dict = {
+        k.replace("._orig_mod", ""): v
+        for k, v in state_dict.items()
+        if "criterion.empty_weight" not in k
+    }
+    missing, unexpected = model.load_state_dict(state_dict, strict=False)
+    print(f"Loaded fine-tuned EoMT checkpoint: {checkpoint_path}")
+    print(f"Missing keys: {len(missing)} | Unexpected keys: {len(unexpected)}")
+    return model
+
+
+def gt_path_from_image_path(path):
+    path_gt = path.replace("images", "labels_masks")
+    if "RoadObsticle21" in path_gt:
+        path_gt = path_gt.replace("webp", "png")
+    if "fs_static" in path_gt:
+        path_gt = path_gt.replace("jpg", "png")
+    if "RoadAnomaly" in path_gt:
+        path_gt = path_gt.replace("jpg", "png")
+    return path_gt
+
+
+def load_anomaly_gt(path_gt, img_size):
+    mask = Image.open(path_gt)
+    mask = Resize(img_size, interpolation=Image.NEAREST)(mask)
+    ood_gts = np.array(mask)
+
+    if "RoadAnomaly" in path_gt:
+        ood_gts = np.where(ood_gts == 2, 1, ood_gts)
+    if "LostAndFound" in path_gt:
+        ood_gts = np.where(ood_gts == 0, 255, ood_gts)
+        ood_gts = np.where(ood_gts == 1, 0, ood_gts)
+        ood_gts = np.where((ood_gts > 1) & (ood_gts < 201), 1, ood_gts)
+    if "Streethazard" in path_gt:
+        ood_gts = np.where(ood_gts == 14, 255, ood_gts)
+        ood_gts = np.where(ood_gts < 20, 0, ood_gts)
+        ood_gts = np.where(ood_gts == 255, 1, ood_gts)
+
+    return ood_gts
+
+
+def forward_eomt(model, image_path, img_size, device):
+    transform = Compose([Resize(img_size), ToTensor()])
+    image = Image.open(image_path).convert("RGB")
+    image_tensor = transform(image).unsqueeze(0).to(device) * 255.0
+
+    with torch.no_grad():
+        mask_logits_per_layer, class_logits_per_layer = model(image_tensor)
+
+    mask_logits = mask_logits_per_layer[-1]
+    class_logits = class_logits_per_layer[-1]
+    mask_logits = F.interpolate(
+        mask_logits,
+        size=img_size,
+        mode="bilinear",
+        align_corners=False,
+    )
+
+    mask_probs = mask_logits.sigmoid()
+    class_probs = class_logits.softmax(dim=-1)[..., :-1]
+    pixel_probs = torch.einsum("bqhw,bqc->bchw", mask_probs, class_probs)
+    pixel_logits = torch.einsum("bqhw,bqc->bchw", mask_probs, class_logits[..., :-1])
+
+    return pixel_probs[0], pixel_logits[0]
+
+
+def anomaly_scores(pixel_probs, pixel_logits, methods):
+    scores = {}
+    if "msp" in methods:
+        scores["msp"] = 1.0 - pixel_probs.max(dim=0).values
+    if "entropy" in methods:
+        prob_dist = pixel_probs / pixel_probs.sum(dim=0, keepdim=True).clamp_min(1e-8)
+        entropy = -(prob_dist * prob_dist.clamp_min(1e-8).log()).sum(dim=0)
+        scores["entropy"] = entropy / np.log(pixel_probs.shape[0])
+    if "maxlogit" in methods:
+        scores["maxlogit"] = -pixel_logits.max(dim=0).values
+    if "rba" in methods:
+        scores["rba"] = -pixel_probs.tanh().sum(dim=0)
+    return {k: v.detach().cpu().numpy().astype("float32") for k, v in scores.items()}
+
+
+def evaluate_dataset(model, dataset_path, methods, img_size, device):
+    score_values = {method: [] for method in methods}
+    label_values = []
+    paths = sorted(glob.glob(os.path.expanduser(dataset_path)))
+
+    for path in paths:
+        print(path)
+        path_gt = gt_path_from_image_path(path)
+        ood_gts = load_anomaly_gt(path_gt, img_size)
+        if 1 not in np.unique(ood_gts):
+            continue
+
+        pixel_probs, pixel_logits = forward_eomt(model, path, img_size, device)
+        scores = anomaly_scores(pixel_probs, pixel_logits, methods)
+
+        valid_mask = (ood_gts == 0) | (ood_gts == 1)
+        labels = (ood_gts[valid_mask] == 1).astype(np.uint8)
+        label_values.append(labels)
+
+        for method in methods:
+            score_values[method].append(scores[method][valid_mask])
+
+        del pixel_probs, pixel_logits, scores
+        if device.type == "cuda":
+            torch.cuda.empty_cache()
+
+    if not label_values:
+        raise RuntimeError(f"No valid anomaly labels found for dataset path: {dataset_path}")
+
+    labels = np.concatenate(label_values)
+    results = {}
+    for method in methods:
+        values = np.concatenate(score_values[method])
+        auprc = average_precision_score(labels, values)
+        fpr95 = fpr_at_95_tpr(values, labels)
+        results[method] = {"auprc": auprc, "fpr95": fpr95}
+    return results
+
+
+def default_checkpoint_name(checkpoint_path, hf_filename):
+    if checkpoint_path is not None:
+        return Path(checkpoint_path).stem
+    return Path(hf_filename).stem
+
+
+def main():
+    parser = ArgumentParser()
+    parser.add_argument("--datasets", nargs="+", default=None)
+    parser.add_argument("--methods", nargs="+", default=["msp"], choices=["msp", "entropy", "maxlogit", "rba"])
+    parser.add_argument(
+        "--config",
+        default=str(EOMT_ROOT / "configs" / "dinov2" / "cityscapes" / "semantic" / "eomt_base_640.yaml"),
+    )
+    parser.add_argument("--checkpoint", default=None)
+    parser.add_argument("--checkpoint-name", default=None)
+    parser.add_argument("--hf-repo", default="daniAimo/eomt_fine_tuned")
+    parser.add_argument("--hf-filename", default="epoch=4-step=14875.ckpt")
+    parser.add_argument("--img-size", type=int, nargs=2, default=(640, 640), metavar=("H", "W"))
+    parser.add_argument("--num-classes", type=int, default=19)
+    parser.add_argument("--num-q", type=int, default=200)
+    parser.add_argument("--results-file", default="results_eomt_finetuned.txt")
+    parser.add_argument("--cpu", action="store_true")
+    args = parser.parse_args()
+
+    device = torch.device("cpu" if args.cpu or not torch.cuda.is_available() else "cuda")
+    img_size = tuple(args.img_size)
+
+    config = load_config(args.config)
+    checkpoint_path = args.checkpoint or download_checkpoint(args.hf_repo, args.hf_filename)
+    checkpoint_name = args.checkpoint_name or default_checkpoint_name(args.checkpoint, args.hf_filename)
+    model = build_eomt_model(config, checkpoint_path, img_size, args.num_classes, args.num_q, device)
+
+    dataset_list = []
+    if args.datasets is not None:
+        for dataset_name in args.datasets:
+            dataset_list.append((dataset_name, DATASETS[dataset_name]))
+    else:
+        dataset_list = [("RoadAnomaly21", DATASETS["RoadAnomaly21"])]
+
+    with open(args.results_file, "a", encoding="utf-8") as file:
+        file.write(f"\nFine-tuned EoMT anomaly evaluation | checkpoint={checkpoint_name}\n")
+        header = f"{'checkpoint':<24} {'dataset':<15} {'method':<8} {'AUPRC':>10} {'FPR@TPR95':>10}"
+        print(header)
+        file.write(header + "\n")
+        for dataset_name, dataset_path in dataset_list:
+            print("\nDataset:", dataset_name)
+            results = evaluate_dataset(model, dataset_path, args.methods, img_size, device)
+            for method, metrics in results.items():
+                line = (
+                    f"{checkpoint_name:<24} {dataset_name:<15} {method:<8} "
+                    f"{metrics['auprc'] * 100.0:10.4f} "
+                    f"{metrics['fpr95'] * 100.0:10.4f}"
+                )
+                print(line)
+                file.write(line + "\n")
+
+
+if __name__ == "__main__":
+    main()
