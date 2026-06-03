@@ -1,0 +1,54 @@
+
+EoMT anomaly evaluation
+     RoadAnomaly       msp  AUPRC: 75.1655  FPR@TPR95: 19.0710
+     RoadAnomaly   entropy  AUPRC: 51.5438  FPR@TPR95: 44.0736
+     RoadAnomaly  maxlogit  AUPRC: 70.9057  FPR@TPR95: 44.8832
+   RoadAnomaly21       msp  AUPRC: 73.8746  FPR@TPR95: 33.5757
+   RoadAnomaly21   entropy  AUPRC: 67.5200  FPR@TPR95: 26.1103
+   RoadAnomaly21  maxlogit  AUPRC: 72.8476  FPR@TPR95: 20.9331
+       fs_static       msp  AUPRC: 54.5348  FPR@TPR95: 34.8135
+       fs_static   entropy  AUPRC: 11.8682  FPR@TPR95: 56.8836
+       fs_static  maxlogit  AUPRC: 53.4809  FPR@TPR95: 77.9201
+
+EoMT anomaly evaluation
+     RoadAnomaly       msp  AUPRC: 75.1655  FPR@TPR95: 19.0710
+     RoadAnomaly   entropy  AUPRC: 51.5438  FPR@TPR95: 44.0736
+     RoadAnomaly  maxlogit  AUPRC: 70.9057  FPR@TPR95: 44.8832
+   RoadAnomaly21       msp  AUPRC: 73.8746  FPR@TPR95: 33.5757
+   RoadAnomaly21   entropy  AUPRC: 67.5200  FPR@TPR95: 26.1103
+   RoadAnomaly21  maxlogit  AUPRC: 72.8476  FPR@TPR95: 20.9331
+       fs_static       msp  AUPRC: 54.5348  FPR@TPR95: 34.8135
+       fs_static   entropy  AUPRC: 11.8682  FPR@TPR95: 56.8836
+       fs_static  maxlogit  AUPRC: 53.4809  FPR@TPR95: 77.9201
+       LostFound       msp  AUPRC: 25.3984  FPR@TPR95: 14.6334
+       LostFound   entropy  AUPRC: 5.4950  FPR@TPR95: 31.3303
+       LostFound  maxlogit  AUPRC: 26.4019  FPR@TPR95: 16.4279
+  RoadObsticle21       msp  AUPRC: 90.1505  FPR@TPR95: 0.5747
+  RoadObsticle21   entropy  AUPRC: 84.0453  FPR@TPR95: 15.3995
+  RoadObsticle21  maxlogit  AUPRC: 48.7726  FPR@TPR95: 99.9996
+
+EoMT anomaly evaluation
+
+EoMT anomaly evaluation
+
+EoMT anomaly evaluation
+     RoadAnomaly       msp  AUPRC: 75.1655  FPR@TPR95: 19.0710
+     RoadAnomaly   entropy  AUPRC: 51.5438  FPR@TPR95: 44.0736
+     RoadAnomaly  maxlogit  AUPRC: 70.9057  FPR@TPR95: 44.8832
+     RoadAnomaly       rba  AUPRC: 74.4714  FPR@TPR95: 20.3875
+   RoadAnomaly21       msp  AUPRC: 73.8746  FPR@TPR95: 33.5757
+   RoadAnomaly21   entropy  AUPRC: 67.5200  FPR@TPR95: 26.1103
+   RoadAnomaly21  maxlogit  AUPRC: 72.8476  FPR@TPR95: 20.9331
+   RoadAnomaly21       rba  AUPRC: 69.8896  FPR@TPR95: 79.7859
+       fs_static       msp  AUPRC: 54.5348  FPR@TPR95: 34.8135
+       fs_static   entropy  AUPRC: 11.8682  FPR@TPR95: 56.8836
+       fs_static  maxlogit  AUPRC: 53.4809  FPR@TPR95: 77.9201
+       fs_static       rba  AUPRC: 56.1606  FPR@TPR95: 82.6610
+       LostFound       msp  AUPRC: 25.3984  FPR@TPR95: 14.6334
+       LostFound   entropy  AUPRC: 5.4950  FPR@TPR95: 31.3303
+       LostFound  maxlogit  AUPRC: 26.4019  FPR@TPR95: 16.4279
+       LostFound       rba  AUPRC: 25.9323  FPR@TPR95: 8.7551
+  RoadObsticle21       msp  AUPRC: 90.1505  FPR@TPR95: 0.5747
+  RoadObsticle21   entropy  AUPRC: 84.0453  FPR@TPR95: 15.3995
+  RoadObsticle21  maxlogit  AUPRC: 48.7726  FPR@TPR95: 99.9996
+  RoadObsticle21       rba  AUPRC: 87.1560  FPR@TPR95: 99.9494

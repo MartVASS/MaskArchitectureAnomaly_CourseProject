@@ -1,0 +1,22 @@
+
+EoMT COCO anomaly evaluation | checkpoint=eomt_coco
+                           eomt_coco       RoadAnomaly       msp  AUPRC: 20.9839  FPR@TPR95: 94.3140
+                           eomt_coco       RoadAnomaly   entropy  AUPRC: 16.8750  FPR@TPR95: 93.8251
+                           eomt_coco       RoadAnomaly  maxlogit  AUPRC: 18.4950  FPR@TPR95: 85.7919
+                           eomt_coco       RoadAnomaly       rba  AUPRC: 17.8498  FPR@TPR95: 79.6570
+                           eomt_coco     RoadAnomaly21       msp  AUPRC: 34.9583  FPR@TPR95: 87.7703
+                           eomt_coco     RoadAnomaly21   entropy  AUPRC: 21.8150  FPR@TPR95: 89.5734
+                           eomt_coco     RoadAnomaly21  maxlogit  AUPRC: 28.8397  FPR@TPR95: 75.9648
+                           eomt_coco     RoadAnomaly21       rba  AUPRC: 23.8104  FPR@TPR95: 64.8959
+                           eomt_coco         fs_static       msp  AUPRC: 6.1457  FPR@TPR95: 96.6541
+                           eomt_coco         fs_static   entropy  AUPRC: 6.5971  FPR@TPR95: 94.8321
+                           eomt_coco         fs_static  maxlogit  AUPRC: 7.0849  FPR@TPR95: 74.7174
+                           eomt_coco         fs_static       rba  AUPRC: 1.5075  FPR@TPR95: 99.9515
+                           eomt_coco         LostFound       msp  AUPRC: 1.4352  FPR@TPR95: 96.6946
+                           eomt_coco         LostFound   entropy  AUPRC: 1.4876  FPR@TPR95: 38.9682
+                           eomt_coco         LostFound  maxlogit  AUPRC: 0.3311  FPR@TPR95: 91.4270
+                           eomt_coco         LostFound       rba  AUPRC: 0.1954  FPR@TPR95: 97.1289
+                           eomt_coco    RoadObsticle21       msp  AUPRC: 1.3804  FPR@TPR95: 99.9908
+                           eomt_coco    RoadObsticle21   entropy  AUPRC: 17.6324  FPR@TPR95: 100.0000
+                           eomt_coco    RoadObsticle21  maxlogit  AUPRC: 23.0767  FPR@TPR95: 99.9946
+                           eomt_coco    RoadObsticle21       rba  AUPRC: 39.3471  FPR@TPR95: 99.9931

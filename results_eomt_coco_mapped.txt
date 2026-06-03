@@ -1,0 +1,24 @@
+
+EoMT COCO mapped anomaly evaluation | checkpoint=eomt_coco
+mapping=notebooks/coco_to_cityscapes_mapping.json
+checkpoint         dataset         method        AUPRC  FPR@TPR95
+eomt_coco          RoadAnomaly     msp         71.8761    85.7750
+eomt_coco          RoadAnomaly     entropy     63.6815    57.6906
+eomt_coco          RoadAnomaly     maxlogit    68.2578    80.5392
+eomt_coco          RoadAnomaly     rba         69.4730    80.8949
+eomt_coco          RoadAnomaly21   msp         56.8241    31.4764
+eomt_coco          RoadAnomaly21   entropy     47.0379    75.0748
+eomt_coco          RoadAnomaly21   maxlogit    56.8119    63.3745
+eomt_coco          RoadAnomaly21   rba         48.6758    69.8051
+eomt_coco          fs_static       msp         80.7358    14.6436
+eomt_coco          fs_static       entropy     51.8611    36.9865
+eomt_coco          fs_static       maxlogit    72.4137    61.4659
+eomt_coco          fs_static       rba         84.5773    46.7033
+eomt_coco          LostFound       msp          1.3215    95.5515
+eomt_coco          LostFound       entropy      1.2851    39.5145
+eomt_coco          LostFound       maxlogit     0.5795    92.0780
+eomt_coco          LostFound       rba          0.3209    97.6848
+eomt_coco          RoadObsticle21  msp         67.3099    18.1274
+eomt_coco          RoadObsticle21  entropy     50.1947    94.7408
+eomt_coco          RoadObsticle21  maxlogit    53.4725    99.9862
+eomt_coco          RoadObsticle21  rba         67.2991    64.9841

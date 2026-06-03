@@ -1,0 +1,23 @@
+
+Fine-tuned EoMT anomaly evaluation | checkpoint=epoch=4-step=14875
+checkpoint               dataset         method        AUPRC  FPR@TPR95
+epoch=4-step=14875       RoadAnomaly     msp         52.5868    98.1442
+epoch=4-step=14875       RoadAnomaly     entropy     53.5118    54.3333
+epoch=4-step=14875       RoadAnomaly     maxlogit    36.5493    91.7869
+epoch=4-step=14875       RoadAnomaly     rba         45.2675    86.9227
+epoch=4-step=14875       RoadAnomaly21   msp         65.2992    17.7439
+epoch=4-step=14875       RoadAnomaly21   entropy     83.6331     2.3125
+epoch=4-step=14875       RoadAnomaly21   maxlogit    47.2140    67.9553
+epoch=4-step=14875       RoadAnomaly21   rba         28.6497    99.6027
+epoch=4-step=14875       fs_static       msp         56.4778    15.5305
+epoch=4-step=14875       fs_static       entropy     49.3752    38.5777
+epoch=4-step=14875       fs_static       maxlogit    22.3790    92.7953
+epoch=4-step=14875       fs_static       rba         45.0030    94.5826
+epoch=4-step=14875       LostFound       msp         27.2070    30.6770
+epoch=4-step=14875       LostFound       entropy     19.5160    32.6648
+epoch=4-step=14875       LostFound       maxlogit     8.3662    87.5222
+epoch=4-step=14875       LostFound       rba         25.8093    92.9128
+epoch=4-step=14875       RoadObsticle21  msp         67.0789    96.4957
+epoch=4-step=14875       RoadObsticle21  entropy     78.8446    41.3587
+epoch=4-step=14875       RoadObsticle21  maxlogit    60.5677    84.6537
+epoch=4-step=14875       RoadObsticle21  rba         41.9257    99.6753
