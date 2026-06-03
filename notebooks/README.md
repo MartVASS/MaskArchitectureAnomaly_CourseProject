@@ -46,6 +46,6 @@ To run the training, OPEN Fine_tuning_COCO_fixed_1.ipynb.
 Run the first two cells. This would take 5 minutes, then a request to resart your session pop. Restart your session  and rerun all the cells.
 Then connect to your wandb account with the API key provided. Then run the next cell who adapt the code to calculate the mIoU using the mapping (COCO -> Cityscapes) between index classes. Then run the last cell dans be patient during fine tuning, after each epoch, the mIoU is calculated.
 
-NOTE : a problem currently occurs with the display of the output of this notebooks, if you want to visualize you can find here : https://nbviewer.org/github/MartVASS/MaskArchitectureAnomaly_CourseProject/blob/main/notebooks/Fine_tuning_COCO_fixed_1.ipynb a link to see the output of the fine tune process.
+NOTE : if a problem occurs with the display of the output of this notebooks, you can visualize it here : https://nbviewer.org/github/MartVASS/MaskArchitectureAnomaly_CourseProject/blob/main/notebooks/Fine_tuning_COCO_fixed_1.ipynb a link to see the output of the fine tune process.
 
    
