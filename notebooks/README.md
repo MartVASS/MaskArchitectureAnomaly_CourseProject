@@ -39,7 +39,7 @@ Run the first two cells. This would take 5 minutes, then a request to resart you
 
 ## Fine tuning of COCO pretrained model 
 
-REQUIREMENTS : REQUIREMENTS : have the the cityscapes validation datasets in your google drive : "mydrive/Cityscapes" (TO BE MODIFIED IN YOUR SPECIFIC CASE in preparation code cell.)
+REQUIREMENTS : have the the cityscapes validation datasets in your google drive : "mydrive/Cityscapes" (TO BE MODIFIED IN YOUR SPECIFIC CASE in preparation code cell.)
 have the .bin file of the model on your drive : "/content/drive/MyDrive/COCO/eomt_coco.bin"
 
 To run the training, OPEN Fine_tuning_COCO_fixed_1.ipynb. 
@@ -47,5 +47,9 @@ Run the first two cells. This would take 5 minutes, then a request to resart you
 Then connect to your wandb account with the API key provided. Then run the next cell who adapt the code to calculate the mIoU using the mapping (COCO -> Cityscapes) between index classes. Then run the last cell dans be patient during fine tuning, after each epoch, the mIoU is calculated.
 
 NOTE : if a problem occurs with the display of the output of this notebooks, you can visualize it here : https://nbviewer.org/github/MartVASS/MaskArchitectureAnomaly_CourseProject/blob/main/notebooks/Fine_tuning_COCO_fixed_1.ipynb a link to see the output of the fine tune process.
+
+## Evaluate the mIoU of the ERFNet model
+
+REQUIREMENTS : have the Anomaly ...
 
    
