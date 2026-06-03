@@ -49,7 +49,7 @@ NOTE : if a problem occurs with the display of the output of this notebooks, you
 
 ## Evaluate the mIoU of the ERFNet model on Cityscapes
 
-REQUIREMENTS : REQUIREMENTS : have the cityscapes validation datasets in your google drive : "mydrive/Cityscapes" (TO BE MODIFIED IN YOUR SPECIFIC CASE)
+REQUIREMENTS : have the cityscapes validation datasets in your google drive : "mydrive/Cityscapes" (TO BE MODIFIED IN YOUR SPECIFIC CASE)
 
 To evaluate this model, OPEN Eval_ERFNet_mIoU.ipynb. 
 Run the first two cells. Run all the cells. This should take few minutes on GPU T4. At the end, you can read the mIoU.
