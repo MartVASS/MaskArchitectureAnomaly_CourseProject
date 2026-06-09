@@ -60,6 +60,11 @@ REQUIREMENTS : have the anomaly datasets on your drive. Modify the directory.
 
 Run the Step7_1.ipynb. All metrics are calculated automatically.
 
+## To evaluate EOMTs anomaly metrics 
 
+REQUIREMENTS : have the anomaly datasets on your drive. Modify the directory.
 
+- To evaluate the COCO-pretrained run Step8_COCO_EoMT.ipynb
+- To evaluate the COCO_Mapped_EoMT run Step8_Mapped_EoMT.ipynb
+- To evaluate the finetuned EoMT run Step8_Finetuned_EoMT.ipynb
    
