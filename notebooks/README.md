@@ -54,6 +54,12 @@ REQUIREMENTS : have the cityscapes validation datasets in your google drive : "m
 To evaluate this model, OPEN Eval_ERFNet_mIoU.ipynb. 
 Run the first two cells. Run all the cells. This should take few minutes on GPU T4. At the end, you can read the mIoU.
 
-## 
+## To evaluate ERFNET anomaly metrics
+
+REQUIREMENTS : have the anomaly datasets on your drive. Modify the directory.
+
+Run the Step7_1.ipynb. All metrics are calculated automatically.
+
+
 
    
